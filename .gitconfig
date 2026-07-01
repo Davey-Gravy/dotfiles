@@ -1,0 +1,9 @@
+[credential "https://github.com"]
+	helper = 
+	helper = !/home/daveygravy/.local/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/home/daveygravy/.local/bin/gh auth git-credential
+[user]
+	email = drcole@wpi.edu
+	name = Davis Cole
