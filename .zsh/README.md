@@ -39,3 +39,11 @@ dotfiles push
    dotfiles config status.showUntrackedFiles no
    ```
 3. Recreate `~/.zshrc.local` with your secrets (it is intentionally not in the repo).
+
+## Auth note (this machine)
+
+This box has multiple `gh` accounts logged in; the repo is owned by **Davey-Gravy** but the
+active account is usually **CoolSimDavis**. So the dotfiles repo has a **repo-local** git
+credential helper (`~/.dotfiles/config`, not tracked) that fetches Davey-Gravy's token on
+demand: `push`/`pull` work without switching accounts, and no token is stored on disk.
+On a single-account machine you don't need this — the default `gh` helper just works.
