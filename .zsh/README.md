@@ -15,6 +15,7 @@ dotfiles push
 
 ## Tracked files
 - `.zshrc`, `.zsh/aliases-git.zsh`, `.zsh/completions/`, `.zsh/README.md`
+- `.zsh/install.sh` — provisions the CLI tools the config depends on
 - `.gitconfig`
 
 ## NOT tracked (machine-local / secret)
@@ -23,14 +24,9 @@ dotfiles push
 
 ## Set up on a NEW machine
 
-1. Install the tools the config depends on:
+1. Clone and check out the config (the installer lives inside the repo):
    ```sh
-   sudo apt install zsh fzf fd-find bat eza zsh-autosuggestions zsh-syntax-highlighting
-   # zoxide + starship: use their install scripts if apt is too old
-   ```
-2. Clone and check out:
-   ```sh
-   git clone --bare <REMOTE_URL> $HOME/.dotfiles
+   git clone --bare https://github.com/Davey-Gravy/dotfiles.git $HOME/.dotfiles
    alias dotfiles='git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
    dotfiles checkout            # if this errors on existing files, back them up first:
                                 #   mkdir ~/.dotfiles-backup && dotfiles checkout 2>&1 | \
@@ -38,7 +34,13 @@ dotfiles push
    dotfiles checkout            # retry
    dotfiles config status.showUntrackedFiles no
    ```
+2. Install the tools the config depends on (Debian/Ubuntu):
+   ```sh
+   ~/.zsh/install.sh --check    # preview what's missing, changes nothing
+   ~/.zsh/install.sh            # install the missing ones
+   ```
 3. Recreate `~/.zshrc.local` with your secrets (it is intentionally not in the repo).
+4. `exec zsh`
 
 ## Auth note (this machine)
 
