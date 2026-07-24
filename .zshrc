@@ -69,3 +69,23 @@ if [ -f /opt/intel/oneapi/setvars.sh ]; then
     export MPIFC=mpiifx MPICC=mpiicx MPICXX=mpiicpx
 fi
 # <<< MFC Intel oneAPI (ifx) toolchain <<<
+
+# GLM 5.2 via Z.ai (Anthropic-compatible endpoint) — `glm` launches Claude Code on GLM;
+# plain `claude` stays on the Anthropic subscription. Key lives in ~/.config/zai/key (chmod 600).
+glm() {
+  ANTHROPIC_BASE_URL="https://api.z.ai/api/anthropic" \
+  ANTHROPIC_AUTH_TOKEN="$(< ~/.config/zai/key)" \
+  ANTHROPIC_DEFAULT_OPUS_MODEL="glm-5.2" \
+  ANTHROPIC_DEFAULT_SONNET_MODEL="glm-5.2" \
+  ANTHROPIC_DEFAULT_HAIKU_MODEL="glm-4.7" \
+  API_TIMEOUT_MS="3000000" \
+  claude --model glm-5.2 "$@"
+}
+
+# >>> Basilisk CFD >>>
+# Built 2026-07-07 with gcc (CC=gcc) so qcc bakes in gcc, NOT the oneAPI icx
+# from the block above — simulations compile/run without oneAPI sourced.
+# GPU backends (gpu/cuda/hip/opencl) skipped: CPU-only host, unused by octree/quadtree AMR.
+export BASILISK="$HOME/basilisk/src"
+export PATH="$PATH:$BASILISK"
+# <<< Basilisk CFD <<<
