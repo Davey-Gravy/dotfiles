@@ -15,7 +15,10 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' menu select
 
 # ---- Plugins (sourced directly, no framework) ----
-source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+# deja replaces zsh-autosuggestions: fuzzy + directory-aware + sequence prediction
+# (github.com/Giammarco-Ferranti/deja). Daemon auto-spawns; data in ~/.local/share/deja.
+# → accept, Ctrl+→ accept word, Shift+→/← cycle fuzzy, Ctrl+X suppress.
+command -v deja >/dev/null && eval "$(deja init zsh)"
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # ---- fzf: ctrl-R history, ctrl-T files, alt-C dirs, **<TAB> inline picker ----

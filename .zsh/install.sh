@@ -6,7 +6,8 @@
 # without changing anything.
 #
 # Covers: the shell stack (zsh + plugins, fzf, fd, bat, eza, zoxide),
-# the prompt (starship), the multiplexer (zellij), gh, and Claude Code.
+# deja (predictive autosuggestions), the prompt (starship), the
+# multiplexer (zellij), gh, and Claude Code.
 # Deliberately NOT covered: the pipx/uv Python toolchain, Intel oneAPI,
 # and npm agents (pi, gemini) — install those separately.
 set -euo pipefail
@@ -33,8 +34,8 @@ for pkg in curl zsh fzf fd-find bat eza zoxide; do
   if have "${APT_BIN[$pkg]}"; then say "ok   $pkg"; else say "need $pkg"; missing+=("$pkg"); fi
 done
 # zsh plugins are sourced files, not on PATH
+# (zsh-autosuggestions dropped: replaced by deja, step 5)
 for pair in \
-  "zsh-autosuggestions:/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh" \
   "zsh-syntax-highlighting:/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"; do
   pkg="${pair%%:*}"; f="${pair#*:}"
   if [ -f "$f" ]; then say "ok   $pkg"; else say "need $pkg"; missing+=("$pkg"); fi
@@ -85,7 +86,18 @@ elif [ "$CHECK_ONLY" -eq 0 ]; then
     && sudo apt-get install gh -y
 else say "need gh"; fi
 
-# ---- 5. Claude Code -> ~/.local/bin via official installer ----------------
+# ---- 5. deja (predictive autosuggestions) -> ~/.local/bin -----------------
+# Replaces zsh-autosuggestions: fuzzy + directory-aware + sequence prediction.
+# Upstream installer checksum-verifies the release binary and runs
+# `deja import`; it skips the .zshrc append because our .zshrc already
+# has the guarded `deja init zsh` line.
+step "deja"
+if have deja; then say "ok   deja"
+elif [ "$CHECK_ONLY" -eq 0 ]; then
+  curl -fsSL https://raw.githubusercontent.com/Giammarco-Ferranti/deja/main/install.sh | sh
+else say "need deja"; fi
+
+# ---- 6. Claude Code -> ~/.local/bin via official installer ----------------
 step "Claude Code"
 if have claude; then say "ok   claude"
 elif [ "$CHECK_ONLY" -eq 0 ]; then
