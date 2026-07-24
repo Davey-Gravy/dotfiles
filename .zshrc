@@ -19,28 +19,50 @@ zstyle ':completion:*' menu select
 # (github.com/Giammarco-Ferranti/deja). Daemon auto-spawns; data in ~/.local/share/deja.
 # → accept, Ctrl+→ accept word, Shift+→/← cycle fuzzy, Ctrl+X suppress.
 command -v deja >/dev/null && eval "$(deja init zsh)"
-source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# zsh-syntax-highlighting lives in different prefixes per platform (Debian apt vs
+# Homebrew). Source whichever exists; stay silent if neither does.
+for _zsh_hl in \
+  /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+  /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+  /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh; do
+  [ -f "$_zsh_hl" ] && { source "$_zsh_hl"; break; }
+done
+unset _zsh_hl
 
 # ---- fzf: ctrl-R history, ctrl-T files, alt-C dirs, **<TAB> inline picker ----
-# Backend = fd (fdfind on Debian): fast, respects .gitignore, includes hidden.
-export FZF_DEFAULT_COMMAND='fdfind --type f --hidden --follow --exclude .git'
+# Backend = fd, which Debian ships as `fdfind` and Homebrew as `fd`. Resolve the
+# real binary name once so the exports below work on both platforms.
+if command -v fdfind >/dev/null; then _FD=fdfind; else _FD=fd; fi
+if command -v batcat >/dev/null; then _BAT=batcat; else _BAT=bat; fi
+
+export FZF_DEFAULT_COMMAND="$_FD --type f --hidden --follow --exclude .git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND='fdfind --type d --hidden --follow --exclude .git'
+export FZF_ALT_C_COMMAND="$_FD --type d --hidden --follow --exclude .git"
 export FZF_DEFAULT_OPTS='--height 60% --layout=reverse --border --info=inline'
 # Previews, like Claude Code's @ : file contents via bat, dir trees via eza.
-export FZF_CTRL_T_OPTS="--preview 'batcat --style=numbers --color=always --line-range=:300 {} 2>/dev/null || eza --tree --color=always --icons {} 2>/dev/null | head -300'"
+export FZF_CTRL_T_OPTS="--preview '$_BAT --style=numbers --color=always --line-range=:300 {} 2>/dev/null || eza --tree --color=always --icons {} 2>/dev/null | head -300'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always --icons {} | head -300'"
-source /usr/share/doc/fzf/examples/key-bindings.zsh
-source /usr/share/doc/fzf/examples/completion.zsh
+
+# Shell integration: fzf >= 0.48 emits it via `fzf --zsh`. Older builds (e.g.
+# Debian's apt package) only ship the example scripts, so fall back to those.
+if fzf --zsh >/dev/null 2>&1; then
+  eval "$(fzf --zsh)"
+else
+  for _fzf_dir in /usr/share/doc/fzf/examples /usr/share/fzf; do
+    [ -f "$_fzf_dir/key-bindings.zsh" ] && source "$_fzf_dir/key-bindings.zsh"
+    [ -f "$_fzf_dir/completion.zsh" ]   && source "$_fzf_dir/completion.zsh"
+  done
+  unset _fzf_dir
+fi
 # Make the **<TAB> inline trigger use fd too (this is the closest thing to @).
-_fzf_compgen_path() { fdfind --hidden --follow --exclude .git . "$1"; }
-_fzf_compgen_dir()  { fdfind --type d --hidden --follow --exclude .git . "$1"; }
+_fzf_compgen_path() { $_FD --hidden --follow --exclude .git . "$1"; }
+_fzf_compgen_dir()  { $_FD --type d --hidden --follow --exclude .git . "$1"; }
 
 # ---- zoxide: smart cd ----
-eval "$(zoxide init zsh)"
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 
 # ---- starship: prompt ----
-eval "$(starship init zsh)"
+command -v starship >/dev/null && eval "$(starship init zsh)"
 
 # ---- git aliases (Oh My Zsh git plugin) ----
 source ~/.zsh/aliases-git.zsh
