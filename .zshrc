@@ -107,6 +107,19 @@ glm() {
   claude --model glm-5.2 "$@"
 }
 
+# Kimi (Moonshot) via Anthropic-compatible endpoint — `kimi` launches Claude Code on Kimi;
+# plain `claude` stays on the Anthropic subscription. Key lives in ~/.config/moonshot/key (chmod 600).
+# kimi-k3 forces thinking on (effort max) for opus/sonnet tiers; highspeed variant backs the haiku tier.
+kimi() {
+  ANTHROPIC_BASE_URL="https://api.moonshot.ai/anthropic" \
+  ANTHROPIC_AUTH_TOKEN="$(< ~/.config/moonshot/key)" \
+  ANTHROPIC_DEFAULT_OPUS_MODEL="kimi-k3" \
+  ANTHROPIC_DEFAULT_SONNET_MODEL="kimi-k3" \
+  ANTHROPIC_DEFAULT_HAIKU_MODEL="kimi-k2.7-code-highspeed" \
+  API_TIMEOUT_MS="3000000" \
+  claude --model kimi-k3 "$@"
+}
+
 # >>> Basilisk CFD >>>
 # Built 2026-07-07 with gcc (CC=gcc) so qcc bakes in gcc, NOT the oneAPI icx
 # from the block above — simulations compile/run without oneAPI sourced.
