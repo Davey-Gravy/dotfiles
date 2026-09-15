@@ -89,7 +89,7 @@ fi
 # Makes ./mfc.sh build/run use ifx + Intel MPI by default.
 # Delete this block to revert MFC (and other builds) to gfortran/OpenMPI.
 if [ -f /opt/intel/oneapi/setvars.sh ]; then
-    source /opt/intel/oneapi/setvars.sh > /dev/null 2>&1
+    source ~/.zsh/oneapi-env.zsh   # cached setvars.sh; see that file
     export FC=ifx CC=icx CXX=icpx
     export MPIFC=mpiifx MPICC=mpiicx MPICXX=mpiicpx
 fi

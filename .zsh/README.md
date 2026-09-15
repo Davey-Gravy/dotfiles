@@ -14,7 +14,9 @@ dotfiles push
 ```
 
 ## Tracked files
-- `.zshrc`, `.zsh/aliases-git.zsh`, `.zsh/completions/`, `.zsh/README.md`
+- `.zshrc`, `.zshenv`, `.zsh/aliases-git.zsh`, `.zsh/completions/`, `.zsh/README.md`
+- `.zsh/oneapi-env.zsh` — cached replay of Intel oneAPI `setvars.sh` (cache in
+  `~/.cache/zsh/`, rebuilt automatically; `rm` it to force)
 - `.zsh/install.sh` — provisions the CLI tools the config depends on
 - `.gitconfig`
 
